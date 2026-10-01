@@ -9,7 +9,10 @@ from app import models, mongo_dal
 from app.routers import auth_router, admin_router, team_router, chat_router
 
 # Initialize database tables
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"Database initialization notice: {e}")
 
 app = FastAPI(
     title="Nayagi Incubation Center API",
