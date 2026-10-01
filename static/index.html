@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nayagi Incubation Center - Portal Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="flex items-center justify-center p-4 relative overflow-x-hidden">
+
+    <!-- Background Decorative Glows -->
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/30 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-sky-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="w-full max-w-md glass-panel p-8 animate-fade-in relative z-10">
+
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600/20 text-indigo-400 mb-4 border border-indigo-500/30">
+                <i class="fa-solid fa-rocket text-2xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight text-white">Nayagi Incubation Center</h1>
+            <p class="text-sm text-slate-400 mt-1">Management Portal & Team Hub</p>
+        </div>
+
+        <!-- Auth Tabs -->
+        <div class="flex bg-slate-900/60 p-1 rounded-xl mb-6 border border-slate-800">
+            <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-white bg-indigo-600 transition-all duration-200">
+                <i class="fa-solid fa-right-to-bracket mr-2"></i>Sign In
+            </button>
+            <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition-all duration-200">
+                <i class="fa-solid fa-user-plus mr-2"></i>Register
+            </button>
+        </div>
+
+        <!-- Alert Notification -->
+        <div id="auth-alert" class="hidden mb-4 p-3 rounded-lg text-sm flex items-center gap-2"></div>
+
+        <!-- LOGIN FORM -->
+        <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Email Address</label>
+                <div class="relative">
+                    <i class="fa-solid fa-envelope absolute left-3 top-3 text-slate-500"></i>
+                    <input type="email" id="login-email" required class="w-full glass-input pl-10" placeholder="admin@incubation.com or user@alphainno.com">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Password</label>
+                <div class="relative">
+                    <i class="fa-solid fa-lock absolute left-3 top-3 text-slate-500"></i>
+                    <input type="password" id="login-password" required class="w-full glass-input pl-10" placeholder="••••••••">
+                </div>
+            </div>
+
+            <button type="submit" id="btn-login-submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg shadow-indigo-600/30 flex justify-center items-center gap-2">
+                <span>Sign In to Dashboard</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </form>
+
+        <!-- REGISTER FORM -->
+        <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Full Name</label>
+                <div class="relative">
+                    <i class="fa-solid fa-user absolute left-3 top-3 text-slate-500"></i>
+                    <input type="text" id="reg-name" required class="w-full glass-input pl-10" placeholder="John Doe">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Email Address</label>
+                <div class="relative">
+                    <i class="fa-solid fa-envelope absolute left-3 top-3 text-slate-500"></i>
+                    <input type="email" id="reg-email" required class="w-full glass-input pl-10" placeholder="user@myteam.com">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Team Name (Optional)</label>
+                <div class="relative">
+                    <i class="fa-solid fa-people-group absolute left-3 top-3 text-slate-500"></i>
+                    <input type="text" id="reg-team" class="w-full glass-input pl-10" placeholder="e.g. Alpha Innovations">
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">Join an existing team or create a new team.</p>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Password</label>
+                <div class="relative">
+                    <i class="fa-solid fa-lock absolute left-3 top-3 text-slate-500"></i>
+                    <input type="password" id="reg-password" required class="w-full glass-input pl-10" placeholder="Minimum 6 characters">
+                </div>
+            </div>
+
+            <button type="submit" id="btn-reg-submit" class="w-full py-3 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg shadow-sky-600/30 flex justify-center items-center gap-2">
+                <span>Create Account</span>
+                <i class="fa-solid fa-user-check"></i>
+            </button>
+        </form>
+
+        <!-- DEMO CREDENTIALS HINT -->
+        <div class="mt-8 pt-6 border-t border-slate-800">
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 text-center">Demo Quick Login Credentials</p>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+                <button type="button" onclick="fillCredentials('admin@incubation.com', 'AdminPass123!')" class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700/60 hover:bg-slate-700 text-left transition-all">
+                    <div class="font-bold text-indigo-400 mb-0.5"><i class="fa-solid fa-shield-halved mr-1"></i> Admin</div>
+                    <div class="text-slate-400 text-[11px] truncate">admin@incubation.com</div>
+                    <div class="text-slate-500 text-[10px]">Pass: AdminPass123!</div>
+                </button>
+                <button type="button" onclick="fillCredentials('user@alphainno.com', 'UserPass123!')" class="p-2.5 rounded-lg bg-slate-800/80 border border-slate-700/60 hover:bg-slate-700 text-left transition-all">
+                    <div class="font-bold text-sky-400 mb-0.5"><i class="fa-solid fa-user-group mr-1"></i> User Team</div>
+                    <div class="text-slate-400 text-[11px] truncate">user@alphainno.com</div>
+                    <div class="text-slate-500 text-[10px]">Pass: UserPass123!</div>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Check existing login token
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("incubation_token");
+            const role = localStorage.getItem("incubation_role");
+            if (token) {
+                if (role === "admin") {
+                    window.location.href = "/admin.html";
+                } else {
+                    window.location.href = "/dashboard.html";
+                }
+            }
+        });
+
+        function switchAuthTab(tab) {
+            const loginBtn = document.getElementById("tab-login");
+            const regBtn = document.getElementById("tab-register");
+            const loginForm = document.getElementById("form-login");
+            const regForm = document.getElementById("form-register");
+            const alertBox = document.getElementById("auth-alert");
+            alertBox.classList.add("hidden");
+
+            if (tab === "login") {
+                loginBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-white bg-indigo-600 transition-all duration-200";
+                regBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition-all duration-200";
+                loginForm.classList.remove("hidden");
+                regForm.classList.add("hidden");
+            } else {
+                regBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-white bg-indigo-600 transition-all duration-200";
+                loginBtn.className = "flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition-all duration-200";
+                regForm.classList.remove("hidden");
+                loginForm.classList.add("hidden");
+            }
+        }
+
+        function showAlert(msg, isError = true) {
+            const alertBox = document.getElementById("auth-alert");
+            alertBox.classList.remove("hidden", "bg-red-500/20", "text-red-300", "border-red-500/30", "bg-emerald-500/20", "text-emerald-300", "border-emerald-500/30");
+
+            if (isError) {
+                alertBox.classList.add("bg-red-500/20", "text-red-300", "border", "border-red-500/30");
+                alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> <span>${msg}</span>`;
+            } else {
+                alertBox.classList.add("bg-emerald-500/20", "text-emerald-300", "border", "border-emerald-500/30");
+                alertBox.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>${msg}</span>`;
+            }
+        }
+
+        function fillCredentials(email, pass) {
+            switchAuthTab("login");
+            document.getElementById("login-email").value = email;
+            document.getElementById("login-password").value = pass;
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById("login-email").value.trim();
+            const password = document.getElementById("login-password").value;
+
+            const submitBtn = document.getElementById("btn-login-submit");
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...`;
+
+            try {
+                const res = await fetch("/api/auth/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.detail || "Login failed.");
+                }
+
+                localStorage.setItem("incubation_token", data.access_token);
+                localStorage.setItem("incubation_role", data.role);
+                localStorage.setItem("incubation_email", data.email);
+                localStorage.setItem("incubation_name", data.full_name);
+                localStorage.setItem("incubation_team_id", data.team_id || "");
+                localStorage.setItem("incubation_team_name", data.team_name || "");
+
+                showAlert("Login Successful! Redirecting...", false);
+                setTimeout(() => {
+                    if (data.role === "admin") {
+                        window.location.href = "/admin.html";
+                    } else {
+                        window.location.href = "/dashboard.html";
+                    }
+                }, 600);
+
+            } catch (err) {
+                showAlert(err.message, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Sign In to Dashboard</span> <i class="fa-solid fa-arrow-right"></i>`;
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const full_name = document.getElementById("reg-name").value.trim();
+            const email = document.getElementById("reg-email").value.trim();
+            const team_name = document.getElementById("reg-team").value.trim();
+            const password = document.getElementById("reg-password").value;
+
+            const submitBtn = document.getElementById("btn-reg-submit");
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Creating Account...`;
+
+            try {
+                const res = await fetch("/api/auth/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ full_name, email, team_name, password })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.detail || "Registration failed.");
+                }
+
+                localStorage.setItem("incubation_token", data.access_token);
+                localStorage.setItem("incubation_role", data.role);
+                localStorage.setItem("incubation_email", data.email);
+                localStorage.setItem("incubation_name", data.full_name);
+                localStorage.setItem("incubation_team_id", data.team_id || "");
+                localStorage.setItem("incubation_team_name", data.team_name || "");
+
+                showAlert("Account Created Successfully! Redirecting...", false);
+                setTimeout(() => {
+                    if (data.role === "admin") {
+                        window.location.href = "/admin.html";
+                    } else {
+                        window.location.href = "/dashboard.html";
+                    }
+                }, 600);
+
+            } catch (err) {
+                showAlert(err.message, true);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>Create Account</span> <i class="fa-solid fa-user-check"></i>`;
+            }
+        }
+    </script>
+</body>
+</html>

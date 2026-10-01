@@ -31,8 +31,10 @@ app.add_middleware(
 # Startup DB seeding function
 @app.on_event("startup")
 def startup_db_seed():
-    # Initialize & seed MongoDB database
-    mongo_dal.init_mongo_db()
+    try:
+        mongo_dal.init_mongo_db()
+    except Exception as e:
+        print(f"MongoDB startup notice: {e}")
 
 # Register Routers
 app.include_router(auth_router.router)

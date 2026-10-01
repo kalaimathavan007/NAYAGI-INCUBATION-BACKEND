@@ -1,0 +1,203 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="100%" height="100%">
+  <defs>
+    <!-- Master Gradients for Exact Artwork Match -->
+    <linearGradient id="gold-3d" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082"/>
+      <stop offset="25%" stop-color="#FFB300"/>
+      <stop offset="50%" stop-color="#FF8F00"/>
+      <stop offset="75%" stop-color="#C77C00"/>
+      <stop offset="100%" stop-color="#8D5500"/>
+    </linearGradient>
+
+    <linearGradient id="peacock-body" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00D2FF"/>
+      <stop offset="40%" stop-color="#0052D4"/>
+      <stop offset="80%" stop-color="#192A56"/>
+      <stop offset="100%" stop-color="#0C1B33"/>
+    </linearGradient>
+
+    <linearGradient id="feather-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F260"/>
+      <stop offset="50%" stop-color="#0575E6"/>
+      <stop offset="100%" stop-color="#021B79"/>
+    </linearGradient>
+
+    <linearGradient id="feather-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF0844"/>
+      <stop offset="50%" stop-color="#FF4E50"/>
+      <stop offset="100%" stop-color="#F9D423"/>
+    </linearGradient>
+
+    <linearGradient id="feather-grad-3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00C9FF"/>
+      <stop offset="100%" stop-color="#92FE9D"/>
+    </linearGradient>
+
+    <!-- Specific Letter Gradients for NAYAGI Title -->
+    <linearGradient id="letter-n" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#002171"/><stop offset="100%" stop-color="#0d47a1"/>
+    </linearGradient>
+    <linearGradient id="letter-a1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#880e4f"/><stop offset="100%" stop-color="#ad1457"/>
+    </linearGradient>
+    <linearGradient id="letter-y" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e65100"/><stop offset="100%" stop-color="#f57c00"/>
+    </linearGradient>
+    <linearGradient id="letter-a2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#004d40"/><stop offset="100%" stop-color="#00695c"/>
+    </linearGradient>
+    <linearGradient id="letter-g" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#01579b"/><stop offset="100%" stop-color="#0277bd"/>
+    </linearGradient>
+    <linearGradient id="letter-i" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4a148c"/><stop offset="100%" stop-color="#6a1b9a"/>
+    </linearGradient>
+
+    <!-- Soft Drop Shadow -->
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000000" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <style>
+    .font-nayagi { font-family: 'Times New Roman', 'Cinzel', serif; font-weight: 800; }
+    .font-sub { font-family: 'Arial', 'Plus Jakarta Sans', sans-serif; font-weight: 800; letter-spacing: 9px; }
+    .font-motto { font-family: 'Arial', 'Plus Jakarta Sans', sans-serif; font-weight: 800; letter-spacing: 6px; }
+  </style>
+
+  <!-- SQUARE CARD CONTAINER WITH WHITE BACKGROUND -->
+  <rect x="20" y="20" width="960" height="960" rx="40" ry="40" fill="#FFFFFF" filter="url(#card-shadow)" stroke="#F1F5F9" stroke-width="4"/>
+
+  <g transform="translate(500, 480)">
+
+    <!-- 1. TOP SPARKLING GOLDEN STAR -->
+    <g transform="translate(0, -320)">
+      <path d="M 0 -45 L 8 -10 L 45 0 L 8 10 L 0 45 L -8 10 L -45 0 L -8 -10 Z" fill="url(#gold-3d)"/>
+      <circle cx="0" cy="0" r="4" fill="#FFF"/>
+    </g>
+
+    <!-- 2. LARGE 3D GOLDEN 'N' EMBLEM IN BACKGROUND -->
+    <g transform="translate(-100, -280)">
+      <!-- Left Vertical Leg -->
+      <path d="M 0 0 L 35 0 L 35 220 L 0 220 Z" fill="url(#gold-3d)"/>
+      <!-- Serif Top Left -->
+      <path d="M -15 0 L 50 0 L 50 18 L -15 18 Z" fill="url(#gold-3d)"/>
+      <!-- Serif Bottom Left -->
+      <path d="M -15 202 L 50 202 L 50 220 L -15 220 Z" fill="url(#gold-3d)"/>
+
+      <!-- Right Vertical Leg -->
+      <path d="M 165 0 L 200 0 L 200 220 L 165 220 Z" fill="url(#gold-3d)"/>
+      <!-- Serif Top Right -->
+      <path d="M 150 0 L 215 0 L 215 18 L 150 18 Z" fill="url(#gold-3d)"/>
+      <!-- Serif Bottom Right -->
+      <path d="M 150 202 L 215 202 L 215 220 L 150 220 Z" fill="url(#gold-3d)"/>
+
+      <!-- Diagonal Cross Stroke -->
+      <path d="M 35 0 L 80 0 L 200 220 L 155 220 Z" fill="url(#gold-3d)"/>
+    </g>
+
+    <!-- 3. FANNING PEACOCK FEATHERS (LEFT SIDE) -->
+    <g transform="translate(-20, -140)">
+      <!-- Layered Feather Swirls -->
+      <path d="M -80 20 C -260 -120, -360 -40, -300 80 C -250 160, -120 180, -40 120 Z" fill="url(#feather-grad-1)"/>
+      <path d="M -70 -20 C -240 -170, -330 -100, -270 20 C -220 100, -100 130, -30 70 Z" fill="url(#feather-grad-2)"/>
+      <path d="M -60 -60 C -210 -210, -290 -140, -230 -20 C -190 60, -80 90, -20 30 Z" fill="url(#feather-grad-3)"/>
+      <path d="M -50 -100 C -180 -250, -250 -180, -190 -60 C -160 20, -60 50, -10 0 Z" fill="url(#feather-grad-1)"/>
+
+      <!-- Feather Eyes (Ocelli) -->
+      <g transform="translate(-220, 50) scale(0.9)">
+        <ellipse cx="0" cy="0" rx="35" ry="48" fill="url(#gold-3d)"/>
+        <ellipse cx="0" cy="0" rx="24" ry="34" fill="#00E676"/>
+        <ellipse cx="0" cy="0" rx="14" ry="22" fill="#0052D4"/>
+        <ellipse cx="0" cy="-2" rx="7" ry="11" fill="#0D1B2A"/>
+      </g>
+
+      <g transform="translate(-160, -40) scale(0.8)">
+        <ellipse cx="0" cy="0" rx="35" ry="48" fill="url(#gold-3d)"/>
+        <ellipse cx="0" cy="0" rx="24" ry="34" fill="#00E5FF"/>
+        <ellipse cx="0" cy="0" rx="14" ry="22" fill="#1A2A6C"/>
+        <ellipse cx="0" cy="-2" rx="7" ry="11" fill="#0D1B2A"/>
+      </g>
+
+      <g transform="translate(-90, -110) scale(0.7)">
+        <ellipse cx="0" cy="0" rx="35" ry="48" fill="url(#gold-3d)"/>
+        <ellipse cx="0" cy="0" rx="24" ry="34" fill="#FF1744"/>
+        <ellipse cx="0" cy="0" rx="14" ry="22" fill="#1A2A6C"/>
+        <ellipse cx="0" cy="-2" rx="7" ry="11" fill="#0D1B2A"/>
+      </g>
+    </g>
+
+    <!-- 4. PEACOCK BODY, NECK, & CROWN (RIGHT SIDE) -->
+    <g transform="translate(-20, -140)">
+      <!-- Smooth Graceful Curved Neck -->
+      <path d="M 30 150 C 160 160, 270 110, 270 -20 C 270 -90, 230 -140, 190 -150 C 170 -155, 150 -135, 170 -115 C 200 -95, 220 -40, 210 20 C 190 100, 100 110, 30 90 Z" fill="url(#peacock-body)"/>
+
+      <!-- Peacock Head -->
+      <circle cx="180" cy="-145" r="26" fill="url(#peacock-body)"/>
+      <path d="M 200 -152 L 265 -135 L 200 -125 Z" fill="url(#gold-3d)"/> <!-- Sharp Beak -->
+      <circle cx="192" cy="-148" r="5" fill="#FFFFFF"/> <!-- Eye -->
+      <circle cx="193" cy="-148" r="2.5" fill="#09111E"/>
+
+      <!-- Crest Feathers (Crown / Kalgi) -->
+      <path d="M 170 -168 L 135 -210 M 175 -172 L 155 -220 M 182 -172 L 180 -225 M 188 -170 L 205 -218" stroke="url(#gold-3d)" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="135" cy="-210" r="6" fill="url(#peacock-body)"/>
+      <circle cx="155" cy="-220" r="6" fill="url(#peacock-body)"/>
+      <circle cx="180" cy="-225" r="6" fill="url(#peacock-body)"/>
+      <circle cx="205" cy="-218" r="6" fill="url(#peacock-body)"/>
+    </g>
+
+    <!-- 5. TYPOGRAPHY & BRAND TEXT -->
+    <g transform="translate(0, 180)">
+
+      <!-- NAYAGI MULTI-COLOR GRADIENT TITLE -->
+      <text x="0" y="0" text-anchor="middle" font-size="115" class="font-nayagi">
+        <tspan fill="url(#letter-n)">N</tspan>
+        <tspan fill="url(#letter-a1)">A</tspan>
+        <tspan fill="url(#letter-y)">Y</tspan>
+        <tspan fill="url(#letter-a2)">A</tspan>
+        <tspan fill="url(#letter-g)">G</tspan>
+        <tspan fill="url(#letter-i)">I</tspan>
+      </text>
+
+      <!-- GOLDEN DIVIDER LINE -->
+      <g transform="translate(0, 32)">
+        <line x1="-360" y1="0" x2="-35" y2="0" stroke="url(#gold-3d)" stroke-width="3"/>
+        <polygon points="0,-6 6,0 0,6 -6,0" fill="url(#gold-3d)"/>
+        <line x1="35" y1="0" x2="360" y2="0" stroke="url(#gold-3d)" stroke-width="3"/>
+      </g>
+
+      <!-- SUBTITLE: INCUBATION COUNCIL -->
+      <text x="0" y="80" text-anchor="middle" font-size="34" fill="#0C2340" class="font-sub">
+        INCUBATION COUNCIL
+      </text>
+
+      <!-- SECONDARY LINE WITH DIAMONDS -->
+      <g transform="translate(0, 115)">
+        <line x1="-340" y1="0" x2="340" y2="0" stroke="url(#gold-3d)" stroke-width="2" opacity="0.8"/>
+        <circle cx="-340" cy="0" r="4" fill="url(#gold-3d)"/>
+        <circle cx="340" cy="0" r="4" fill="url(#gold-3d)"/>
+      </g>
+
+      <!-- MOTTO TAGLINE -->
+      <text x="0" y="152" text-anchor="middle" font-size="20" class="font-motto">
+        <tspan fill="#AD1457">INSPIRE</tspan>
+        <tspan fill="#D97706">  |  </tspan>
+        <tspan fill="#D97706">INNOVATE</tspan>
+        <tspan fill="#00695C">  |  </tspan>
+        <tspan fill="#00695C">INCUBATE</tspan>
+        <tspan fill="#0277BD">  |  </tspan>
+        <tspan fill="#0277BD">IMPACT</tspan>
+      </text>
+
+      <!-- BOTTOM FLOURISH ORNAMENT -->
+      <g transform="translate(0, 185)">
+        <line x1="-240" y1="0" x2="240" y2="0" stroke="url(#gold-3d)" stroke-width="1.5" opacity="0.6"/>
+        <path d="M 0 -10 C 6 -3, 12 -3, 0 10 C -12 -3, -6 -3, 0 -10 Z" fill="url(#gold-3d)"/>
+        <circle cx="-16" cy="0" r="2.5" fill="url(#gold-3d)"/>
+        <circle cx="16" cy="0" r="2.5" fill="url(#gold-3d)"/>
+      </g>
+
+    </g>
+
+  </g>
+</svg>

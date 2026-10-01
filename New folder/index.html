@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nanova Cabs - Next-Gen Taxi Booking & Fleet Management</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Leaflet CSS for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-[#0b1329] text-slate-100 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-cyan-500/20 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('booking')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-400 flex items-center justify-center text-slate-950 font-extrabold text-xl shadow-lg shadow-cyan-500/25">
+                        <i class="fa-solid fa-taxi"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">Nanova Cabs</span>
+                            <span class="text-[10px] bg-cyan-500/20 text-cyan-300 font-bold px-2 py-0.5 rounded-full border border-cyan-500/30">Next-Gen</span>
+                        </div>
+                        <span class="text-[11px] block text-slate-400 font-medium">Smart Ride Solutions</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="hidden md:flex items-center space-x-1 bg-slate-950/80 p-1 rounded-xl border border-slate-800">
+                    <button id="nav-booking" onclick="switchTab('booking')" class="tab-btn active-tab px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all">
+                        <i class="fa-solid fa-car-side"></i> Book Ride
+                    </button>
+                    <button id="nav-driver" onclick="switchTab('driver')" class="tab-btn text-slate-400 hover:text-slate-200 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all">
+                        <i class="fa-solid fa-id-card"></i> Driver Portal
+                    </button>
+                    <button id="nav-admin" onclick="switchTab('admin')" class="tab-btn text-slate-400 hover:text-slate-200 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition-all">
+                        <i class="fa-solid fa-chart-pie"></i> Fleet Dashboard
+                    </button>
+                </nav>
+
+                <!-- User Profile & Safety SOS Badge -->
+                <div class="flex items-center gap-3">
+                    <!-- User Auth Info Badge -->
+                    <div id="user-profile-badge" class="hidden sm:flex items-center gap-2 bg-slate-800/80 border border-cyan-500/30 text-cyan-300 px-3 py-1.5 rounded-xl text-xs font-semibold">
+                        <i class="fa-solid fa-circle-user text-emerald-400 text-sm"></i>
+                        <span id="user-mobile-display">+91 98765 43210</span>
+                        <button onclick="logoutUser()" title="Logout" class="ml-1 text-slate-400 hover:text-rose-400 transition">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+
+                    <button onclick="openSafetyModal()" class="flex items-center gap-1.5 bg-rose-500/10 border border-rose-500/40 text-rose-400 hover:bg-rose-500 hover:text-white px-3 py-1.5 rounded-xl text-xs font-bold transition">
+                        <i class="fa-solid fa-shield-halved text-rose-400"></i>
+                        <span>24x7 Safety</span>
+                    </button>
+
+                    <button onclick="resetDemoData()" title="Reset Demo Data" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition border border-slate-700">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Row -->
+        <div class="md:hidden flex border-t border-slate-800 bg-slate-950/90 justify-around p-2 text-xs font-medium">
+            <button onclick="switchTab('booking')" class="text-cyan-400 flex flex-col items-center gap-1">
+                <i class="fa-solid fa-car-side text-base"></i> Book
+            </button>
+            <button onclick="switchTab('driver')" class="text-slate-400 flex flex-col items-center gap-1">
+                <i class="fa-solid fa-id-card text-base"></i> Driver
+            </button>
+            <button onclick="switchTab('admin')" class="text-slate-400 flex flex-col items-center gap-1">
+                <i class="fa-solid fa-chart-pie text-base"></i> Admin
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+        <!-- ================= SECTION 1: CUSTOMER BOOKING ================= -->
+        <section id="tab-booking" class="tab-section grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Left Side: Booking Panel -->
+            <div class="lg:col-span-5 flex flex-col gap-6">
+
+                <!-- Service Category Selector (Daily / Rental / Outstation / EV) -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-2.5 shadow-xl backdrop-blur-md">
+                    <div class="grid grid-cols-4 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 text-center text-xs font-bold">
+                        <button id="service-daily" onclick="selectServiceMode('daily')" class="service-mode-btn active-service py-2 rounded-lg transition flex flex-col items-center gap-1">
+                            <i class="fa-solid fa-city text-base"></i>
+                            <span>Daily</span>
+                        </button>
+                        <button id="service-rental" onclick="selectServiceMode('rental')" class="service-mode-btn text-slate-400 py-2 rounded-lg transition flex flex-col items-center gap-1 hover:text-slate-200">
+                            <i class="fa-solid fa-clock text-base"></i>
+                            <span>Rentals</span>
+                        </button>
+                        <button id="service-outstation" onclick="selectServiceMode('outstation')" class="service-mode-btn text-slate-400 py-2 rounded-lg transition flex flex-col items-center gap-1 hover:text-slate-200">
+                            <i class="fa-solid fa-route text-base"></i>
+                            <span>Outstation</span>
+                        </button>
+                        <button id="service-ev" onclick="selectServiceMode('ev')" class="service-mode-btn text-slate-400 py-2 rounded-lg transition flex flex-col items-center gap-1 hover:text-slate-200">
+                            <i class="fa-solid fa-bolt text-base text-emerald-400"></i>
+                            <span class="text-emerald-400">EV Fleet</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Pickup & Destination Card -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl backdrop-blur-md space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <h2 class="text-base font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-location-dot text-cyan-400"></i> Set Route & Details
+                        </h2>
+
+                        <!-- Rider Mode Toggle (For Myself / For Friend) -->
+                        <div class="flex items-center bg-slate-950 text-xs rounded-lg p-1 border border-slate-800">
+                            <button id="rider-me" onclick="toggleRiderMode('me')" class="px-2.5 py-1 rounded-md font-semibold bg-gradient-to-r from-emerald-500 to-cyan-400 text-slate-950">For Me</button>
+                            <button id="rider-guest" onclick="toggleRiderMode('guest')" class="px-2.5 py-1 rounded-md font-semibold text-slate-400 hover:text-white">For Friend</button>
+                        </div>
+                    </div>
+
+                    <!-- Guest Contact Details Input (Hidden by default) -->
+                    <div id="guest-details-box" class="hidden bg-slate-950/80 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <span class="text-xs font-bold text-cyan-400"><i class="fa-solid fa-user-tag"></i> Booking for Someone Else</span>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <input type="text" id="guest-name" aria-label="Friend's Name" placeholder="Friend's Name" class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-cyan-400">
+                            <input type="tel" id="guest-phone" aria-label="Mobile Number" placeholder="Mobile Number" class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-white focus:outline-none focus:border-cyan-400">
+                        </div>
+                    </div>
+
+                    <!-- Location Pickers -->
+                    <div class="space-y-3">
+                        <!-- Pickup Location -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label for="pickup-select" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Pickup Location</label>
+                                <span id="gps-status-badge" class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
+                                    <i class="fa-solid fa-crosshairs animate-spin"></i> Locating GPS...
+                                </span>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-400">
+                                    <i class="fa-solid fa-circle-dot"></i>
+                                </div>
+                                <select id="pickup-select" onchange="updateLocationsFromSelect()" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-sm text-slate-100 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition">
+                                    <option value="live_gps" selected>📍 My Live GPS Location</option>
+                                    <option value="chennai_central">Chennai Central Railway Station</option>
+                                    <option value="t_nagar">T. Nagar (Panagal Park)</option>
+                                    <option value="airport">Chennai International Airport</option>
+                                    <option value="omr_tech_park">TIDEL Park, OMR</option>
+                                    <option value="velachery">Velachery Main Bus Stand</option>
+                                    <option value="guindy">Guindy Industrial Estate</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Dropoff Location -->
+                        <div id="dropoff-container">
+                            <label for="drop-select" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Drop Destination</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-rose-500">
+                                    <i class="fa-solid fa-location-dot"></i>
+                                </div>
+                                <select id="drop-select" onchange="updateLocationsFromSelect()" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-sm text-slate-100 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 transition">
+                                    <option value="omr_tech_park" selected>TIDEL Park, OMR</option>
+                                    <option value="airport">Chennai International Airport</option>
+                                    <option value="chennai_central">Chennai Central Railway Station</option>
+                                    <option value="t_nagar">T. Nagar (Panagal Park)</option>
+                                    <option value="velachery">Velachery Main Bus Stand</option>
+                                    <option value="guindy">Guindy Industrial Estate</option>
+                                    <option value="out_pondicherry">Outstation: Pondicherry (150 km)</option>
+                                    <option value="out_tirupati">Outstation: Tirupati (135 km)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Rental Package Selector -->
+                        <div id="rental-package-box" class="hidden space-y-1">
+                            <label for="rental-package" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Select Rental Hourly Package</label>
+                            <select id="rental-package" onchange="calculateFaresAndDistance()" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-3 text-sm text-cyan-300 font-bold focus:outline-none">
+                                <option value="1hr">1 Hour (10 km included) - ₹299</option>
+                                <option value="2hr">2 Hours (20 km included) - ₹549</option>
+                                <option value="4hr" selected>4 Hours (40 km included) - ₹999</option>
+                                <option value="8hr">8 Hours (80 km included) - ₹1,899</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Schedule Ride Row -->
+                    <div class="flex items-center justify-between pt-2">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="schedule-check" onchange="toggleScheduleBox()" class="w-4 h-4 accent-cyan-400 rounded cursor-pointer">
+                            <label for="schedule-check" class="text-xs text-slate-300 font-semibold cursor-pointer">Schedule for Later</label>
+                        </div>
+
+                        <div id="schedule-picker-box" class="hidden text-xs">
+                            <input type="datetime-local" id="schedule-time" aria-label="Select Date and Time" class="bg-slate-950 border border-slate-800 rounded-lg p-1.5 text-slate-200">
+                        </div>
+                    </div>
+
+                    <!-- Quick Map Tip -->
+                    <div class="flex items-center gap-2 text-xs text-slate-400 bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+                        <i class="fa-solid fa-lightbulb text-cyan-400"></i>
+                        <span>Or click directly on map to position pickup & drop pins</span>
+                    </div>
+
+                    <!-- Trip Distance & Duration Estimator -->
+                    <div class="grid grid-cols-2 gap-3 pt-1">
+                        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                            <span class="text-xs text-slate-400 block">Est. Distance</span>
+                            <span id="est-distance" class="text-lg font-bold text-cyan-400">12.5 km</span>
+                        </div>
+                        <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-center">
+                            <span class="text-xs text-slate-400 block">Est. Time</span>
+                            <span id="est-time" class="text-lg font-bold text-emerald-400">28 mins</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cab Options Selection -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl backdrop-blur-md">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider">Choose Ride Category</h3>
+                        <span id="active-category-label" class="text-xs text-cyan-300 font-bold bg-cyan-500/10 px-2.5 py-0.5 rounded-full border border-cyan-500/30">Daily City Rides</span>
+                    </div>
+
+                    <div id="cab-categories" class="space-y-3">
+
+                        <!-- Bike Taxi -->
+                        <div onclick="selectCab('bike')" id="cab-bike" class="cab-card bg-slate-950 border border-slate-800 p-3.5 rounded-xl cursor-pointer flex items-center justify-between transition-all hover:border-slate-700">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-motorcycle"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-bold text-white text-sm">Nanova Bike</h4>
+                                        <span class="text-[9px] bg-cyan-500/20 text-cyan-300 font-bold px-1.5 py-0.5 rounded">Fastest</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400">1 Rider • Helmet Provided</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="price-bike" class="text-base font-extrabold text-white">₹65</span>
+                                <span class="text-[10px] block text-emerald-400 font-medium">1 min away</span>
+                            </div>
+                        </div>
+
+                        <!-- Auto Ride -->
+                        <div onclick="selectCab('auto')" id="cab-auto" class="cab-card selected-cab bg-slate-950 border-2 border-cyan-400 p-3.5 rounded-xl cursor-pointer flex items-center justify-between transition-all">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-taxi"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-bold text-white text-sm">Nanova Auto</h4>
+                                        <span class="text-[9px] bg-emerald-500/20 text-emerald-300 font-bold px-1.5 py-0.5 rounded">Popular</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400">3 Seats • Doorstep Pickup</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="price-auto" class="text-base font-extrabold text-cyan-400">₹145</span>
+                                <span class="text-[10px] block text-emerald-400 font-medium">3 mins away</span>
+                            </div>
+                        </div>
+
+                        <!-- Mini Hatchback -->
+                        <div onclick="selectCab('mini')" id="cab-mini" class="cab-card bg-slate-950 border border-slate-800 p-3.5 rounded-xl cursor-pointer flex items-center justify-between transition-all hover:border-slate-700">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-car-side"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-white text-sm">Nanova Mini</h4>
+                                    <p class="text-xs text-slate-400">4 Seats • AC Hatchback</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="price-mini" class="text-base font-extrabold text-white">₹230</span>
+                                <span class="text-[10px] block text-emerald-400 font-medium">5 mins away</span>
+                            </div>
+                        </div>
+
+                        <!-- Prime Sedan -->
+                        <div onclick="selectCab('sedan')" id="cab-sedan" class="cab-card bg-slate-950 border border-slate-800 p-3.5 rounded-xl cursor-pointer flex items-center justify-between transition-all hover:border-slate-700">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-car"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-white text-sm">Nanova Prime Sedan</h4>
+                                    <p class="text-xs text-slate-400">4 Seats • Free In-Cab Wi-Fi</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="price-sedan" class="text-base font-extrabold text-white">₹320</span>
+                                <span class="text-[10px] block text-emerald-400 font-medium">2 mins away</span>
+                            </div>
+                        </div>
+
+                        <!-- Electric EV Cab -->
+                        <div onclick="selectCab('ev')" id="cab-ev" class="cab-card bg-slate-950 border border-slate-800 p-3.5 rounded-xl cursor-pointer flex items-center justify-between transition-all hover:border-slate-700">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-leaf"></i>
+                                </div>
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <h4 class="font-bold text-white text-sm">Nanova EV Electric</h4>
+                                        <span class="text-[9px] bg-emerald-500/20 text-emerald-300 font-bold px-1.5 py-0.5 rounded">Zero Emissions</span>
+                                    </div>
+                                    <p class="text-xs text-slate-400">4 Seats • Silent & Smooth</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="price-ev" class="text-base font-extrabold text-emerald-400">₹260</span>
+                                <span class="text-[10px] block text-emerald-400 font-medium">4 mins away</span>
+                            </div>
+                        </div>
+
+                        <!-- Prime SUV -->
+                        <div onclick="selectCab('suv')" id="cab-suv" class="cab-card bg-slate-950 border border-slate-800 p-3.5 rounded-xl cursor-pointer flex items-center justify-between transition-all hover:border-slate-700">
+                            <div class="flex items-center gap-3">
+                                <div class="w-11 h-11 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-truck-monster"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-white text-sm">Nanova Prime SUV</h4>
+                                    <p class="text-xs text-slate-400">6 Seats • Extra Luggage Space</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <span id="price-suv" class="text-base font-extrabold text-white">₹450</span>
+                                <span class="text-[10px] block text-emerald-400 font-medium">7 mins away</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Promo Code / Coupon Offer Box -->
+                    <div class="mt-4 pt-3 border-t border-slate-800">
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="coupon-code" aria-label="Enter Coupon Code" placeholder="Enter Coupon Code (e.g. NANOVA50)" class="flex-1 bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs uppercase font-mono text-cyan-300 focus:outline-none focus:border-cyan-400">
+                            <button onclick="applyCoupon()" class="bg-gradient-to-r from-emerald-500 to-cyan-400 hover:from-emerald-600 hover:to-cyan-500 text-slate-950 font-bold text-xs px-4 py-2 rounded-lg transition">Apply</button>
+                        </div>
+                        <div id="coupon-msg" class="hidden text-[11px] text-emerald-400 font-semibold mt-1">
+                            <i class="fa-solid fa-circle-check"></i> Coupon NANOVA50 Applied! 20% Discount added.
+                        </div>
+                    </div>
+
+                    <!-- Payment Mode -->
+                    <div class="mt-3 pt-3 border-t border-slate-800 flex items-center justify-between">
+                        <label for="payment-mode" class="text-xs font-semibold text-slate-400">Payment Method:</label>
+                        <select id="payment-mode" class="bg-slate-950 text-xs border border-slate-800 rounded-lg px-3 py-1.5 text-slate-200 focus:outline-none">
+                            <option value="UPI / GPay / PhonePe">UPI / GPay / PhonePe</option>
+                            <option value="Cash">Cash to Driver</option>
+                            <option value="Nanova Wallet">Nanova Wallet (Bal: ₹850)</option>
+                            <option value="Nanova Pay Later">Nanova Pay Later</option>
+                        </select>
+                    </div>
+
+                    <!-- Confirm Ride Button -->
+                    <button id="book-btn" onclick="confirmRideBooking()" class="w-full mt-4 bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 hover:opacity-95 text-slate-950 font-black py-3.5 px-6 rounded-xl text-base shadow-lg shadow-cyan-500/25 transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                        <span>Book Ride Now</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Right Side: Interactive Live Map & Booking Status -->
+            <div class="lg:col-span-7 flex flex-col gap-6">
+                <!-- Map Container -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-xl backdrop-blur-md flex flex-col h-[580px] relative">
+                    <div class="flex items-center justify-between mb-3 px-2">
+                        <div class="flex items-center gap-2">
+                            <span class="relative flex h-3 w-3">
+                              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                              <span class="relative inline-flex rounded-full h-3 w-3 bg-cyan-500"></span>
+                            </span>
+                            <span class="text-sm font-bold text-slate-200">Nanova Fleet GPS Radar</span>
+                        </div>
+
+                        <div class="flex items-center gap-2">
+                            <button onclick="requestUserLocation()" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1 transition">
+                                <i class="fa-solid fa-location-crosshairs text-emerald-400"></i> Locate Me
+                            </button>
+                            <span id="map-status" class="text-xs text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-2.5 py-1 rounded-full font-medium">
+                                GPS Tracking Active
+                            </span>
+                        </div>
+                    </div>
+
+                    <div id="map" class="w-full flex-1 rounded-xl overflow-hidden shadow-inner border border-slate-800 z-10"></div>
+                </div>
+
+                <!-- Live Booking Status / Driver Matched Card -->
+                <div id="status-card" class="hidden bg-slate-900/90 border border-cyan-500/40 rounded-2xl p-6 shadow-2xl transition-all">
+                    <!-- Searching Overlay -->
+                    <div id="searching-driver" class="flex flex-col items-center justify-center py-6 space-y-4">
+                        <div class="relative">
+                            <div class="w-16 h-16 rounded-full border-4 border-cyan-500/20 border-t-cyan-400 animate-spin"></div>
+                            <div class="absolute inset-0 flex items-center justify-center text-cyan-400 text-xl">
+                                <i class="fa-solid fa-radar"></i>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="text-lg font-bold text-white">Connecting with Nearby Drivers...</h3>
+                            <p class="text-xs text-slate-400 mt-1">Finding the highest rated cab closest to your live location</p>
+                        </div>
+                    </div>
+
+                    <!-- Driver Matched Content -->
+                    <div id="driver-assigned" class="hidden space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <div>
+                                <span class="text-xs text-emerald-400 font-semibold bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-1 rounded-full">
+                                    <i class="fa-solid fa-circle-check"></i> Driver Confirmed
+                                </span>
+                                <h3 id="driver-name" class="text-lg font-extrabold text-white mt-1">Karthik Raja</h3>
+                                <p id="cab-model" class="text-xs text-slate-400">White Suzuki Swift Dzire • <span class="font-mono text-cyan-300 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">TN 01 AB 8842</span></p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-slate-400">Ride OTP</div>
+                                <div id="ride-otp" class="text-xl font-mono font-extrabold text-cyan-400 tracking-wider">4921</div>
+                            </div>
+                        </div>
+
+                        <!-- Safety Shield Bar inside Ride -->
+                        <div class="flex items-center justify-between bg-rose-500/10 border border-rose-500/30 p-2.5 rounded-xl text-xs text-rose-300">
+                            <div class="flex items-center gap-2">
+                                <i class="fa-solid fa-shield-halved text-rose-400 text-sm"></i>
+                                <span>Nanova Safety Shield Active: Emergency Response 24x7</span>
+                            </div>
+                            <button onclick="shareLiveLocation()" class="bg-rose-500/20 hover:bg-rose-500 hover:text-white px-2 py-1 rounded font-bold transition">Share Link</button>
+                        </div>
+
+                        <!-- Driver Info & Controls -->
+                        <div class="flex items-center justify-between bg-slate-950/60 p-3 rounded-xl border border-slate-800">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 font-bold border border-slate-700">
+                                    <i class="fa-solid fa-user-check"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-slate-200">Rating: 4.9 ★ (1,240 rides)</div>
+                                    <div id="driver-eta" class="text-xs text-emerald-400">Arriving in 3 mins</div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <a id="call-driver" href="tel:9876543210" class="bg-emerald-600 hover:bg-emerald-500 text-white p-2.5 rounded-lg text-xs font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-phone"></i> Call
+                                </a>
+                                <button onclick="cancelRide()" class="bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 p-2.5 rounded-lg text-xs font-semibold">
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-slate-400">
+                                <span id="trip-progress-text">Driver en route to pickup location</span>
+                                <span id="trip-percentage">25%</span>
+                            </div>
+                            <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
+                                <div id="trip-progress-bar" class="bg-gradient-to-r from-emerald-400 to-cyan-400 h-2 rounded-full transition-all duration-500" style="width: 25%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ================= SECTION 2: DRIVER PORTAL ================= -->
+        <section id="tab-driver" class="tab-section hidden space-y-6">
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl backdrop-blur-md">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-400 flex items-center justify-center text-2xl font-bold">
+                            <i class="fa-solid fa-user-ninja"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-white">Driver Console: Karthik Raja</h2>
+                            <p class="text-xs text-slate-400">Vehicle: Swift Dzire (TN 01 AB 8842) • Mini / Prime Sedan</p>
+                        </div>
+                    </div>
+
+                    <!-- Online Switch -->
+                    <div class="flex items-center gap-3 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                        <span class="text-xs font-semibold text-slate-300">Duty Status:</span>
+                        <button id="driver-status-btn" onclick="toggleDriverDuty()" class="bg-emerald-500 text-slate-950 font-extrabold px-4 py-1.5 rounded-lg text-xs flex items-center gap-2 shadow transition-all">
+                            <span class="w-2 h-2 rounded-full bg-slate-950 animate-ping"></span> ONLINE
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Driver Metrics Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400 block mb-1">Today's Earnings</span>
+                        <span class="text-2xl font-extrabold text-emerald-400">₹2,850</span>
+                        <span class="text-[10px] text-emerald-500 block mt-1">+18% vs yesterday</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400 block mb-1">Trips Completed</span>
+                        <span class="text-2xl font-extrabold text-cyan-400">9 Rides</span>
+                        <span class="text-[10px] text-slate-400 block mt-1">Acceptance: 98%</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400 block mb-1">Hours Online</span>
+                        <span class="text-2xl font-extrabold text-blue-400">6.2 hrs</span>
+                        <span class="text-[10px] text-slate-400 block mt-1">Target: 8.0 hrs</span>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <span class="text-xs text-slate-400 block mb-1">Rating</span>
+                        <span class="text-2xl font-extrabold text-yellow-300">4.92 ★</span>
+                        <span class="text-[10px] text-slate-400 block mt-1">Based on 1,240 reviews</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Incoming Trip Request Box -->
+            <div id="driver-request-box" class="bg-slate-900/90 border-2 border-cyan-400 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-cyan-400 text-slate-950 text-[10px] font-black uppercase px-4 py-1 rounded-bl-xl tracking-wider">
+                    New Trip Request
+                </div>
+
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div class="space-y-2">
+                        <span class="text-xs text-cyan-400 font-bold uppercase tracking-wider">Customer Trip Alert</span>
+                        <h3 class="text-lg font-extrabold text-white">Live Location → TIDEL Park, OMR</h3>
+                        <div class="flex flex-wrap gap-4 text-xs text-slate-300">
+                            <span><i class="fa-solid fa-route text-cyan-400"></i> 12.5 km</span>
+                            <span><i class="fa-solid fa-clock text-emerald-400"></i> Est. 28 mins</span>
+                            <span><i class="fa-solid fa-wallet text-purple-400"></i> Fare: <strong class="text-cyan-400 text-sm">₹320</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 w-full md:w-auto">
+                        <button onclick="acceptTrip()" class="flex-1 md:flex-initial bg-gradient-to-r from-emerald-500 to-cyan-400 hover:opacity-95 text-slate-950 font-extrabold px-6 py-3 rounded-xl text-sm transition shadow-lg shadow-cyan-500/20">
+                            Accept Trip
+                        </button>
+                        <button onclick="rejectTrip()" class="flex-1 md:flex-initial bg-slate-950 hover:bg-slate-800 text-slate-300 font-semibold px-4 py-3 rounded-xl text-sm border border-slate-800">
+                            Decline
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= SECTION 3: ADMIN FLEET DASHBOARD ================= -->
+        <section id="tab-admin" class="tab-section hidden space-y-6">
+
+            <!-- Dashboard Top Stat Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur-md flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Revenue Today</span>
+                        <div class="text-2xl font-black text-emerald-400 mt-1">₹52,480</div>
+                        <span class="text-xs text-emerald-500 flex items-center gap-1 mt-1">
+                            <i class="fa-solid fa-arrow-trend-up"></i> +22.1% this week
+                        </span>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur-md flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Rides</span>
+                        <div class="text-2xl font-black text-cyan-400 mt-1">206 Rides</div>
+                        <span class="text-xs text-slate-400 mt-1 block">15 rides in progress</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-car"></i>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur-md flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Fleet Drivers</span>
+                        <div class="text-2xl font-black text-blue-400 mt-1">36 / 42</div>
+                        <span class="text-xs text-blue-400 mt-1 block">85% fleet online</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800 p-5 rounded-2xl shadow-xl backdrop-blur-md flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Avg Customer Rating</span>
+                        <div class="text-2xl font-black text-yellow-300 mt-1">4.88 ★</div>
+                        <span class="text-xs text-slate-400 mt-1 block">Based on 640 reviews</span>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-yellow-500/10 text-yellow-300 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-star"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Trips Table -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 shadow-xl backdrop-blur-md space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-cyan-400"></i> Live Rides & Recent Logs
+                    </h3>
+                    <button onclick="refreshAdminTable()" class="text-xs text-cyan-400 hover:underline font-semibold">
+                        <i class="fa-solid fa-arrows-rotate"></i> Refresh
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="bg-slate-950 text-xs font-bold uppercase text-slate-400 border-b border-slate-800">
+                            <tr>
+                                <th class="p-3">Ride ID</th>
+                                <th class="p-3">Customer</th>
+                                <th class="p-3">Driver</th>
+                                <th class="p-3">Route</th>
+                                <th class="p-3">Category</th>
+                                <th class="p-3">Fare</th>
+                                <th class="p-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-rides-tbody" class="divide-y divide-slate-800">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- ================= ONE-TIME AUTHENTICATION / LOGIN MODAL ================= -->
+    <div id="auth-modal" class="fixed inset-0 bg-[#0b1329]/95 backdrop-blur-lg z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-cyan-500/40 rounded-3xl p-8 max-w-md w-full space-y-6 shadow-2xl relative text-center">
+
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-cyan-400 text-slate-950 flex items-center justify-center text-3xl mx-auto shadow-lg shadow-cyan-500/30">
+                <i class="fa-solid fa-taxi"></i>
+            </div>
+
+            <div>
+                <h2 class="text-2xl font-black bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">Welcome to Nanova Cabs</h2>
+                <p class="text-xs text-slate-400 mt-1">One-Time Mobile Verification to start booking rides</p>
+            </div>
+
+            <!-- Step 1: Mobile Input -->
+            <div id="auth-step-1" class="space-y-4">
+                <div class="text-left">
+                    <label for="mobile-input" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Enter Mobile Number</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-xs font-bold text-slate-400">+91</span>
+                        <input type="tel" id="mobile-input" value="9876543210" placeholder="10 Digit Mobile Number" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 pl-12 pr-4 text-sm font-bold text-white focus:outline-none focus:border-cyan-400">
+                    </div>
+                </div>
+
+                <button onclick="sendOtp()" class="w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 text-slate-950 font-black py-3.5 rounded-xl text-sm transition shadow-lg shadow-cyan-500/25">
+                    Send Verification OTP
+                </button>
+            </div>
+
+            <!-- Step 2: OTP Input (Hidden initially) -->
+            <div id="auth-step-2" class="hidden space-y-4">
+                <div class="text-left">
+                    <label for="otp-input" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Enter 6-Digit OTP</label>
+                    <input type="text" id="otp-input" value="849210" maxlength="6" placeholder="849210" class="w-full bg-slate-950 border border-slate-800 rounded-xl py-3 text-center text-xl font-mono font-extrabold tracking-widest text-cyan-300 focus:outline-none focus:border-cyan-400">
+                    <span class="text-[11px] text-emerald-400 font-semibold block mt-1 text-center"><i class="fa-solid fa-circle-check"></i> Demo OTP sent to your number</span>
+                </div>
+
+                <button onclick="verifyOtp()" class="w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 text-slate-950 font-black py-3.5 rounded-xl text-sm transition shadow-lg shadow-cyan-500/25">
+                    Verify & Access Nanova Cabs
+                </button>
+            </div>
+
+            <p class="text-[11px] text-slate-500">By continuing, you agree to Nanova Cabs Terms & Privacy Policy</p>
+        </div>
+    </div>
+
+    <!-- 24x7 Safety SOS Modal -->
+    <div id="safety-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-rose-500/50 rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl relative">
+            <button onclick="closeSafetyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <div class="flex items-center gap-3 border-b border-slate-800 pb-3">
+                <div class="w-12 h-12 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-2xl">
+                    <i class="fa-solid fa-shield-cat"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white">Nanova Safety Shield (24x7)</h3>
+                    <p class="text-xs text-slate-400">Emergency & Location Sharing Center</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <button onclick="triggerEmergencySOS()" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-extrabold py-3 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-rose-600/30">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>TRIGGER EMERGENCY SOS ALERT</span>
+                </button>
+
+                <button onclick="shareLiveLocation()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 border border-slate-700">
+                    <i class="fa-solid fa-share-nodes"></i>
+                    <span>Share Live Location Link with Family</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rating & Tipping Modal -->
+    <div id="rating-modal" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-cyan-500/50 rounded-2xl p-6 max-w-md w-full space-y-4 text-center shadow-2xl">
+            <div class="w-16 h-16 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-3xl mx-auto border border-cyan-500/40">
+                <i class="fa-solid fa-flag-checkered"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white">Ride Completed!</h3>
+            <p class="text-xs text-slate-400">How was your ride with Karthik Raja?</p>
+
+            <!-- Star Rating -->
+            <div class="flex justify-center gap-2 text-2xl text-cyan-400">
+                <i class="fa-solid fa-star cursor-pointer hover:scale-110"></i>
+                <i class="fa-solid fa-star cursor-pointer hover:scale-110"></i>
+                <i class="fa-solid fa-star cursor-pointer hover:scale-110"></i>
+                <i class="fa-solid fa-star cursor-pointer hover:scale-110"></i>
+                <i class="fa-solid fa-star cursor-pointer hover:scale-110"></i>
+            </div>
+
+            <!-- Tip Driver Options -->
+            <div class="space-y-1 text-xs">
+                <span class="text-slate-400 font-semibold">Tip Your Driver:</span>
+                <div class="flex justify-center gap-2 pt-1">
+                    <button onclick="selectTip(20)" class="tip-btn bg-slate-950 border border-slate-800 hover:border-cyan-400 text-cyan-400 font-bold px-3 py-1.5 rounded-lg">+₹20</button>
+                    <button onclick="selectTip(50)" class="tip-btn bg-slate-950 border border-slate-800 hover:border-cyan-400 text-cyan-400 font-bold px-3 py-1.5 rounded-lg">+₹50</button>
+                    <button onclick="selectTip(100)" class="tip-btn bg-slate-950 border border-slate-800 hover:border-cyan-400 text-cyan-400 font-bold px-3 py-1.5 rounded-lg">+₹100</button>
+                </div>
+            </div>
+
+            <button onclick="submitRating()" class="w-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-400 text-slate-950 font-bold py-3 rounded-xl text-sm transition">
+                Submit Feedback & Done
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800 py-4 text-center text-xs text-slate-500 mt-auto">
+        <p>© 2025 <strong class="text-slate-400">Nanova Incubation Solutions</strong> — Taxi Fleet Web Application Demo</p>
+    </footer>
+
+    <!-- Leaflet JS for Interactive Maps -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

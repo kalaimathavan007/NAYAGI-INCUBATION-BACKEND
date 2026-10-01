@@ -1,0 +1,111 @@
+/* Custom Styling for Nanova Cabs - Electric Emerald & Cyan Theme */
+
+:root {
+    --primary-emerald: #10b981;
+    --primary-cyan: #06b6d4;
+    --bg-dark: #0b1329;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #0b1329;
+}
+::-webkit-scrollbar-thumb {
+    background: #1e293b;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #334155;
+}
+
+/* Active Navigation Tab Styling */
+.tab-btn.active-tab {
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    color: #030712;
+    font-weight: 800;
+    box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+}
+
+/* Active Service Mode Button (Daily/Rental/Outstation/EV) */
+.service-mode-btn.active-service {
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+    color: #030712;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Selected Cab Card Styling */
+.cab-card.selected-cab {
+    border-color: #06b6d4 !important;
+    background-color: rgba(6, 182, 212, 0.1) !important;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.15) !important;
+}
+
+/* Selected Tip Button */
+.tip-btn.active-tip {
+    background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%) !important;
+    color: #030712 !important;
+}
+
+/* Leaflet Map Styling Override */
+.leaflet-container {
+    background: #0b1329 !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+/* Custom Leaflet Map Controls */
+.leaflet-bar {
+    border: none !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;
+}
+.leaflet-bar a {
+    background-color: #1e293b !important;
+    color: #38bdf8 !important;
+    border-bottom: 1px solid #334155 !important;
+}
+.leaflet-bar a:hover {
+    background-color: #06b6d4 !important;
+    color: #030712 !important;
+}
+
+/* Pulse Animation for Live GPS Radar */
+@keyframes radarPulse {
+    0% {
+        transform: scale(0.9);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.4);
+        opacity: 0.2;
+    }
+    100% {
+        transform: scale(0.9);
+        opacity: 0.8;
+    }
+}
+
+.radar-marker {
+    width: 22px;
+    height: 22px;
+    background: rgba(6, 182, 212, 0.4);
+    border: 2px solid #06b6d4;
+    border-radius: 50%;
+    animation: radarPulse 2s infinite ease-in-out;
+}
+
+/* Custom Leaflet Popup */
+.leaflet-popup-content-wrapper {
+    background: #1e293b !important;
+    color: #f8fafc !important;
+    border: 1px solid #06b6d4 !important;
+    border-radius: 12px !important;
+    font-size: 12px !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.6) !important;
+}
+.leaflet-popup-tip {
+    background: #1e293b !important;
+}
