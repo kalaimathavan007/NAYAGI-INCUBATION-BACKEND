@@ -1,7 +1,12 @@
 import os
 import pymongo
 from pymongo import MongoClient
-import certifi
+try:
+    import certifi
+    has_certifi = True
+except ImportError:
+    has_certifi = False
+
 from app.config import MONGODB_URL, MONGODB_DB_NAME
 
 # Synchronous PyMongo Client for background tasks & seeding
@@ -20,7 +25,8 @@ def get_mongo_db():
             "connectTimeoutMS": 2000
         }
         if "mongodb+srv://" in MONGODB_URL or "ssl=true" in MONGODB_URL.lower():
-            connection_kwargs["tlsCAFile"] = certifi.where()
+            if has_certifi:
+                connection_kwargs["tlsCAFile"] = certifi.where()
             connection_kwargs["tlsAllowInvalidCertificates"] = True
 
         client = MongoClient(MONGODB_URL, **connection_kwargs)
